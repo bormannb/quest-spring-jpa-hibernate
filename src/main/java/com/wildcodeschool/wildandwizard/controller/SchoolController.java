@@ -1,6 +1,13 @@
 package com.wildcodeschool.wildandwizard.controller;
 
+import java.util.Optional;
+
 import com.wildcodeschool.wildandwizard.entity.School;
+import com.wildcodeschool.wildandwizard.entity.Wizard;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.support.Repositories;
+
+import com.wildcodeschool.wildandwizard.repository.SchoolRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +20,19 @@ public class SchoolController {
 
     // TODO : get school repository by dependency injection
 
+    @Autowired
+    private SchoolRepository repository; 
+
     @GetMapping("/schools")
     public String getAll(Model model) {
 
         // TODO : find all schools
+
+        // ------------------------------------
+
+        model.addAttribute("schools", repository.findAll());
+
+        // ------------------------------------
 
         return "schools";
     }
@@ -26,7 +42,15 @@ public class SchoolController {
                             @RequestParam(required = false) Long id) {
 
         // TODO : find one school by id
+        
+        // ------------------------------------
+       School school = new School();
+       if (id != null){
+        Optional<School> optionalSchool = repository.findById(id);
+            school = optionalSchool.get();
 
+       }
+       // ------------------------------------
         return "school";
     }
 
@@ -35,6 +59,10 @@ public class SchoolController {
 
         // TODO : create or update a school
 
+        //----
+
+        repository.save(school);
+        // ------------------------------------
         return "redirect:/schools";
     }
 
@@ -42,6 +70,8 @@ public class SchoolController {
     public String deleteSchool(@RequestParam Long id) {
 
         // TODO : delete a school
+
+        repository.deleteById(id);
 
         return "redirect:/schools";
     }
